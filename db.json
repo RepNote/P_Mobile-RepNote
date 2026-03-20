@@ -1,0 +1,32 @@
+{
+  "workouts": [
+    {
+      "id": "1",
+      "date": "2026-03-21T14:30:00",
+      "status": "completed",
+      "duration_seconds": 3600,
+      "exercises": [
+        {
+          "name": "Curl biceps",
+          "planned_sets": [
+            { "reps": 10, "weight": 10 },
+            { "reps": 10, "weight": 10 }
+          ],
+          "actual_sets": [
+            { "reps": 12, "weight": 10 },
+            { "reps": 8, "weight": 10 }
+          ]
+        },
+        {
+          "name": "Développé couché",
+          "planned_sets": [
+            { "reps": 10, "weight": 50 }
+          ],
+          "actual_sets": [
+            { "reps": 10, "weight": 55 }
+          ]
+        }
+      ]
+    }
+  ]
+}
