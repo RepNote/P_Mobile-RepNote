@@ -1,0 +1,32 @@
+## [ Visual Studio ]
+# Fichiers de build (le gros des 2000 fichiers)
+**/[Bb]in/
+**/[Oo]bj/
+# Cache de Visual Studio et fichiers utilisateur
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+
+## [ .NET MAUI / Xamarin ]
+# Fichiers générés pour les plateformes spécifiques
+Generated/
+[Pp]latforms/Android/Generated/
+[Pp]latforms/iOS/Generated/
+
+## [ NuGet ]
+# Ne pas commit les packages téléchargés, dotnet les restaure tout seul
+*.nuget.props
+*.nuget.targets
+packages/
+
+## [ OS spécifiques ]
+# Mac
+.DS_Store
+# Windows
+Thumbs.db
+
+## [ Secrets & Local Settings ]
+# Si jamais tu utilises des secrets locaux ou des fichiers de config perso
+.env
+appsettings.Development.json
