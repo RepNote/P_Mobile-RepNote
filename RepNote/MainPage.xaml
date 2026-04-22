@@ -3,13 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RepNote.MainPage"
              xmlns:controls="clr-namespace:Plugin.Maui.Calendar.Controls;assembly=Plugin.Maui.Calendar"
-             BackgroundColor="Black">
+             BackgroundColor="Black"
+             Shell.NavBarIsVisible="False">
 
     <VerticalStackLayout Padding="10" VerticalOptions="Fill">
 
         <controls:Calendar
+            Events="{Binding Events}"
             Day="14"
-            Month="6"
+            Month="4"
             Year="2026"
             HeightRequest="450"
             HorizontalOptions="Fill"
@@ -17,10 +19,14 @@
             MonthLabelColor="White"
             YearLabelColor="White"
             DaysTitleColor="Orange"
-            SelectedDayBackgroundColor="Blue"
+            SelectedDayBackgroundColor="DeepSkyBlue"
             SelectedDayTextColor="White"
             DeselectedDayTextColor="White"
-            OtherMonthDayColor="Gray" />
+            OtherMonthDayColor="Gray"
+            TodayOutlineColor="AntiqueWhite"
+            TodayFillColor="AntiqueWhite"
+            EventIndicatorColor="RoyalBlue"
+            />
 
     </VerticalStackLayout>
 
