@@ -1,4 +1,5 @@
 ﻿using Plugin.Maui.Calendar.Models;
+using System.Threading.Tasks;
 namespace RepNote
 {
     public partial class MainPage : ContentPage
@@ -25,8 +26,9 @@ namespace RepNote
             BindingContext = this;
         }
 
-        private void OnCounterClicked(object sender, EventArgs e)
+        private async Task OnPlanifClicked(object sender, EventArgs e)
         {
+            await Shell.Current.GoToAsync("PlanifSerie");
         }
 
     }
