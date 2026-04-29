@@ -63,4 +63,10 @@
 		<PackageReference Include="Plugin.Maui.Calendar" Version="1.2.6" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <MauiXaml Update="PlanifSerie.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
+
 </Project>
