@@ -6,4 +6,9 @@ public partial class SeanceEnCours : ContentPage
 	{
         InitializeComponent();
 	}
+
+	public async void onButtonClicked(object sender, EventArgs e)
+	{
+		await Shell.Current.GoToAsync("MainPage");
+	}
 }
