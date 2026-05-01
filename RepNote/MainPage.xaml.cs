@@ -26,10 +26,10 @@ namespace RepNote
             BindingContext = this;
         }
 
-        private async Task OnPlanifClicked(object sender, EventArgs e)
-        {
-            await Shell.Current.GoToAsync("PlanifSerie");
-        }
+        //private async Task OnPlanifClicked(object sender, EventArgs e)
+        //{
+        //    await Shell.Current.GoToAsync("PlanifSerie");
+        //}
 
     }
 
