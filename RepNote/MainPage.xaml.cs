@@ -25,10 +25,15 @@ namespace RepNote
             BindingContext = this;
         }
 
-        private void OnCounterClicked(object sender, EventArgs e)
+        public async void onClickButton1(object sender, EventArgs e) 
         {
+            await Shell.Current.GoToAsync("SeanceEnCours");
         }
 
+        public async void onClickButton2(object sender, EventArgs e)
+        {
+            await Shell.Current.GoToAsync("PlanifEnCours");
+        }
     }
 
     public class EventModel
