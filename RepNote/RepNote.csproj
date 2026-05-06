@@ -72,6 +72,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="ExerciceEnCours.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="PlanifExercice.xaml">
     	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

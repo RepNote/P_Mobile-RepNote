@@ -56,7 +56,6 @@
 
                     <!-- Bouton avec événement Clicked -->
                     <Button Text="Ajouter" 
-                            Clicked="OnAddSeriesClicked"
                             TextColor="#3498DB" 
                             BackgroundColor="Transparent"
                             HorizontalOptions="Start"
