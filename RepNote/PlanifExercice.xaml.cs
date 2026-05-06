@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
-
+/*  Lieu: ETML
+    Auteur: Thomas Peltier
+    Date: 29.04.2026*/
 namespace RepNote;
 
 
@@ -14,11 +16,7 @@ public partial class PlanifExercice : ContentPage
         SeriesList.ItemsSource = AddedSeries;
     }
 
-    /// <summary>
-    /// Ajoute une nouvelle série à la liste.
-    /// </summary>
-    /// <param name="sender">Le bouton qui a déclenché l'événement</param>
-    /// <param name="e">Les arguments de l'événement</param>
+
     private void OnAddSerieClicked(object sender, EventArgs e)
     {
         if (string.IsNullOrWhiteSpace(RepsEntry.Text) || string.IsNullOrWhiteSpace(PoidsEntry.Text))
