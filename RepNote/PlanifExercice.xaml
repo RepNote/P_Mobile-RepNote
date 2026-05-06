@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RepNote.PlanifExercice"
+             Title="PlanifExercice">
+    <!--Lieu: ETML
+    Auteur: Thomas Peltier
+    Date: 29.04.2026-->
+
+    <ScrollView>
+        <Grid RowDefinitions="Auto, *, Auto" Padding="25, 10, 25, 20">
+
+            <!-- Header -->
+            <VerticalStackLayout Grid.Row="0" Spacing="5" Margin="0,0,0,20">
+                <Label Text="RepNote" TextColor="White" HorizontalOptions="Center" FontSize="13" FontAttributes="Bold" />
+                <Label Text="Plannification" TextColor="White" FontSize="32" FontAttributes="Bold" Margin="0,20,0,0"/>
+            </VerticalStackLayout>
+
+            <!-- Contenu Principal -->
+            <VerticalStackLayout Grid.Row="1" Spacing="20">
+
+                <!-- Section Modifier Nom -->
+                <Label Text="Modifier un exercice" TextColor="#8E8E8E" FontSize="16" />
+                <Frame BackgroundColor="#1A1A1A" CornerRadius="20" HasShadow="False" Padding="20, 20">
+                    <VerticalStackLayout Spacing="0">
+                        <Label Text="Pompe" TextColor="#8E8E8E" FontSize="15" FontAttributes="Bold" />
+                        <BoxView HeightRequest="1" Color="#333333" Margin="0,5,0,10" />
+                        <Button Text="Modifier" TextColor="#3498DB" BackgroundColor="Transparent" HorizontalOptions="Start" Padding="0" HeightRequest="30" FontAttributes="Bold" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Section Ajouter Série -->
+                <Label Text="Ajouter une série" TextColor="#8E8E8E" FontSize="16" />
+                <Frame BackgroundColor="#1A1A1A" CornerRadius="20" HasShadow="False" Padding="20, 20">
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Répétitions" TextColor="#8E8E8E" FontSize="14" FontAttributes="Bold" />
+                        <Entry x:Name="RepsEntry" Keyboard="Numeric" TextColor="White" BackgroundColor="Transparent" HeightRequest="35" Margin="0,-5" />
+                        <BoxView HeightRequest="1" Color="#333333" />
+
+                        <Label Text="Poids" TextColor="#8E8E8E" FontSize="14" FontAttributes="Bold" Margin="0,10,0,0" />
+                        <Entry x:Name="PoidsEntry" Keyboard="Numeric" TextColor="White" BackgroundColor="Transparent" HeightRequest="35" Margin="0,-5" />
+                        <BoxView HeightRequest="1" Color="#333333" Margin="0,0,0,10" />
+
+                        <Button Text="Ajouter" Clicked="OnAddSerieClicked" TextColor="#3498DB" BackgroundColor="Transparent" HorizontalOptions="Start" Padding="0" HeightRequest="30" FontAttributes="Bold" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Liste des séries ajoutées -->
+                <Label Text="Série ajoutés" TextColor="#8E8E8E" FontSize="16" />
+                <CollectionView x:Name="SeriesList">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame BackgroundColor="#1A1A1A" CornerRadius="20" Margin="0,0,0,10" Padding="20,15" HasShadow="False">
+                                <Grid ColumnDefinitions="*, Auto, Auto" RowDefinitions="Auto, Auto">
+                                    <Label Grid.Row="0" Grid.Column="0" Text="{Binding Numero}" TextColor="White" FontSize="16" FontAttributes="Bold" />
+
+                                    <HorizontalStackLayout Grid.Row="1" Grid.Column="0" Spacing="20" Margin="0,10,0,0">
+                                        <Label Text="{Binding Reps, StringFormat='Reps : {0}'}" TextColor="White" FontAttributes="Bold" />
+                                        <Label Text="{Binding Poids, StringFormat='Poids : {0}'}" TextColor="White" FontAttributes="Bold" />
+                                    </HorizontalStackLayout>
+
+                                    <Button Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Text="✎" FontSize="22" TextColor="#3498DB" BackgroundColor="Transparent" WidthRequest="40" VerticalOptions="Center" />
+                                    <Button Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" Text="🗑" FontSize="22" TextColor="#3498DB" BackgroundColor="Transparent" WidthRequest="40" VerticalOptions="Center" />
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+
+            <!-- Footer -->
+            <Button Grid.Row="2" Text="Terminer la séance" BackgroundColor="#EF4444" TextColor="White" HeightRequest="55" CornerRadius="15" FontSize="16" FontAttributes="Bold" Margin="0,20,0,0" />
+
+        </Grid>
+    </ScrollView>
+</ContentPage>
