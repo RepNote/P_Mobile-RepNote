@@ -9,7 +9,6 @@
 
     <Grid RowDefinitions="Auto, *, Auto" Padding="25, 10, 25, 20">
 
-        <!-- Header -->
         <VerticalStackLayout Grid.Row="0" Spacing="5" Margin="0,0,0,25">
             <Label Text="RepNote" 
                    TextColor="White" 
@@ -24,7 +23,6 @@
                    Margin="0,20,0,0"/>
         </VerticalStackLayout>
 
-        <!-- Formulaire et Liste -->
         <VerticalStackLayout Grid.Row="1" Spacing="15">
             <Label Text="Ajouter une série" 
                    TextColor="#8E8E8E" 
@@ -40,7 +38,6 @@
                            FontSize="14" 
                            FontAttributes="Bold" />
 
-                    <!-- Entry avec x:Name pour y accéder en C# -->
                     <Entry x:Name="SeriesEntry"
                            Placeholder=""
                            TextColor="White"
@@ -54,7 +51,6 @@
                              HorizontalOptions="Fill" 
                              Margin="0,0,0,15" />
 
-                    <!-- Bouton avec événement Clicked -->
                     <Button Text="Ajouter" 
                             TextColor="#3498DB" 
                             BackgroundColor="Transparent"
@@ -71,7 +67,6 @@
                    FontSize="16" 
                    Margin="0,15,0,0" />
 
-            <!-- Liste dynamique des séries -->
             <CollectionView x:Name="SeriesList" Margin="0,10,0,0">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
@@ -81,7 +76,6 @@
                                Padding="15,10"
                                HasShadow="False">
                             <Grid ColumnDefinitions="*, Auto, Auto">
-                                <!-- Le texte de la série -->
                                 <Label Grid.Column="0" 
                                        Text="{Binding .}" 
                                        TextColor="White" 
@@ -89,7 +83,6 @@
                                        FontSize="16"
                                        FontAttributes="Bold" />
 
-                                <!-- Icônes d'action (Edit et Delete) -->
                                 <Button Grid.Column="1" 
                                         Text="✎" 
                                         FontSize="20"
@@ -111,7 +104,6 @@
 
         </VerticalStackLayout>
 
-        <!-- Bouton de pied de page -->
         <Button Grid.Row="2"
                 Text="Terminer la séance"
                 BackgroundColor="#EF4444"
