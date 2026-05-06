@@ -26,11 +26,15 @@ namespace RepNote
             BindingContext = this;
         }
 
-        //private async Task OnPlanifClicked(object sender, EventArgs e)
-        //{
-        //    await Shell.Current.GoToAsync("PlanifSerie");
-        //}
+        public async void onClickButton1(object sender, EventArgs e) 
+        {
+            await Shell.Current.GoToAsync("SeanceEnCours");
+        }
 
+        public async void onClickButton2(object sender, EventArgs e)
+        {
+            await Shell.Current.GoToAsync("PlanifSerie");
+        }
     }
 
     public class EventModel

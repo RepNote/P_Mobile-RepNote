@@ -8,6 +8,8 @@
 
             Routing.RegisterRoute("PlanifSerie", typeof(PlanifSerie));
             Routing.RegisterRoute("MainPage", typeof(MainPage));
+            Routing.RegisterRoute("SeanceEnCours", typeof(SeanceEnCours));
+            Routing.RegisterRoute("PlanifSerie", typeof (PlanifSerie));
         }
     }
 }
