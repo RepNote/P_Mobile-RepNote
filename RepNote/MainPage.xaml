@@ -58,7 +58,8 @@
                     TextColor="White" 
                     FontAttributes="Bold" 
                     CornerRadius="12"
-                    HeightRequest="55" />
+                    HeightRequest="55"
+                    Clicked="onClickButton1" />
 
             <Button Grid.Column="1" 
                     Text="Plannifier" 
@@ -67,7 +68,7 @@
                     FontAttributes="Bold" 
                     CornerRadius="12"
                     HeightRequest="55"
-                    />
+                    Clicked="onClickButton2" />
         </Grid>
 
     </Grid>
