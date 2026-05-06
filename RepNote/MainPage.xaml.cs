@@ -1,6 +1,7 @@
 ﻿using Plugin.Maui.Calendar.Models;
 using System.Threading.Tasks;
 namespace RepNote
+//Réalisé par Ryan Läuppi (Ryancmoi)
 {
     public partial class MainPage : ContentPage
     {

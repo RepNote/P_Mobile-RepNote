@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
 using RepNote.Models;
+//Réalisé par Ryan Läuppi (Ryancmoi)
 
 namespace RepNote.Services
 {
