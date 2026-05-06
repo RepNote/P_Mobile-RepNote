@@ -76,7 +76,8 @@
                 CornerRadius="15"
                 FontSize="16"
                 FontAttributes="Bold"
-                VerticalOptions="End" />
+                VerticalOptions="End" 
+                Clicked="onButtonClicked" />
 
     </Grid>
 </ContentPage>

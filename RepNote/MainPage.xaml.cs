@@ -32,7 +32,7 @@ namespace RepNote
 
         public async void onClickButton2(object sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync("PlanifEnCours");
+            await Shell.Current.GoToAsync("PlanifSerie");
         }
     }
 
