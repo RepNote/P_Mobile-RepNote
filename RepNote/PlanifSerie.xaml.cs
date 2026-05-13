@@ -2,50 +2,66 @@ using RepNote.Models;
 using RepNote.Services;
 using System.Collections.ObjectModel;
 /*  Lieu: ETML
-    Auteur: Thomas Peltier
-    Date: 29.04.2026*/
+    Auteur: Ryan Läuppi
+    Date: 13.05.2026*/
 namespace RepNote;
-
 public partial class PlanifSerie : ContentPage
 {
     public ObservableCollection<string> MyWorkouts { get; set; } = [];
-    public PlanifSerie()
-	{
-		InitializeComponent();
-        SeriesList.ItemsSource = MyWorkouts;
-	}
+    private readonly WorkoutService _workoutService;
 
-    public void OnAddSeriesClicked(object sender, EventArgs e)
+    public PlanifSerie()
+    {
+        InitializeComponent();
+        _workoutService = new WorkoutService();
+        SeriesList.ItemsSource = MyWorkouts;
+    }
+
+    public async void OnAddSeriesClicked(object sender, EventArgs e)
     {
         //recupération de l'input
         string workoutName = SeriesEntry.Text;
-
-        if (!string.IsNullOrEmpty(workoutName)){
-
+        if (!string.IsNullOrEmpty(workoutName))
+        {
             MyWorkouts.Add(workoutName);
-
             SeriesEntry.Text = string.Empty;
         }
-
     }
 
     public async void onButtonClicked(object sender, EventArgs e)
     {
-        var service = new WorkoutService();
-
-        var data = await service.LoadWorkoutsAsync();
-
-        var newWorkout = new Workout
+        try
         {
-            Id = data.Workouts.Count + 1,
-            Date = DateTime.Now,
-            Status = "completed",
-            DurationSeconds = 0
-        };
+            // Charger les données existantes
+            var data = await _workoutService.LoadWorkoutsAsync();
 
+            // Créer un nouveau workout
+            var newWorkout = new Workout
+            {
+                Id = data.Workouts.Count + 1,
+                Date = DateTime.Now,
+                Status = "completed",
+                DurationSeconds = 0
+            };
 
+            // Ajouter le workout à la liste
+            data.Workouts.Add(newWorkout);
 
-        await Shell.Current.GoToAsync("..");
+            // Sauvegarder dans le JSON
+            await _workoutService.SaveWorkoutsAsync(data);
+
+            // Afficher un message de succès
+            await DisplayAlert("Succès", "Séance terminée et sauvegardée", "OK");
+
+            // Réinitialiser les séries
+            MyWorkouts.Clear();
+
+            // Revenir à la page précédente
+            await Shell.Current.GoToAsync("..");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Erreur", $"Erreur lors de la sauvegarde : {ex.Message}", "OK");
+        }
     }
-
 }
