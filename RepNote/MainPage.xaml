@@ -7,69 +7,90 @@
              BackgroundColor="Black"
              Shell.NavBarIsVisible="False">
 
-    <Grid RowDefinitions="*, Auto">
+    <Grid RowDefinitions="Auto, *, Auto" Padding="0">
 
-        <ScrollView Grid.Row="0" Padding="10" VerticalOptions="Start">
-            <controls:Calendar
-                Events="{Binding Events}"
-                Day="14" Month="4" Year="2026"
-                HeightRequest="500"
-                HorizontalOptions="Fill"
-                BackgroundColor="Transparent"
-                MonthLabelColor="White"
-                YearLabelColor="White"
-                DaysTitleColor="White"
-                DaysTitleWeekendColor="Aqua"
-                SelectedDayBackgroundColor="RoyalBlue"
-                SelectedDayTextColor="White"
-                DeselectedDayTextColor="White"
-                OtherMonthDayColor="Gray"
-                TodayOutlineColor="Transparent"
-                TodayFillColor="LightBlue"
-                EventIndicatorColor="RoyalBlue"
-                EventIndicatorSelectedColor="Aquamarine"
-                ArrowsBackgroundColor="Transparent"
-                ArrowsColor="White"
-                ArrowsFontSize="25"
-                ShowYearPicker="False"
-                FirstDayOfWeek="Monday"
-                EventsScrollViewVisible="True">
-                <controls:Calendar.EventTemplate>
+        <!-- Calendrier fixe en haut -->
+        <controls:Calendar
+        Grid.Row="0"
+        Events="{Binding Events}"
+        SelectedDate="{Binding SelectedDate, Mode=TwoWay}"
+        HeightRequest="380"
+        HorizontalOptions="Fill"
+        BackgroundColor="Transparent"
+        MonthLabelColor="White"
+        YearLabelColor="White"
+        DaysTitleColor="White"
+        DaysTitleWeekendColor="Aqua"
+        SelectedDayBackgroundColor="RoyalBlue"
+        SelectedDayTextColor="White"
+        DeselectedDayTextColor="White"
+        OtherMonthDayColor="Gray"
+        TodayOutlineColor="Transparent"
+        TodayFillColor="LightBlue"
+        EventIndicatorColor="RoyalBlue"
+        EventIndicatorSelectedColor="Aquamarine"
+        EventIndicatorTextColor="White"
+        EventIndicatorSelectedTextColor="White"
+        ArrowsBackgroundColor="Transparent"
+        ArrowsColor="White"
+        ArrowsFontSize="25"
+        ShowYearPicker="False"
+        FirstDayOfWeek="Monday"
+        EventsScrollViewVisible="False">
+            <controls:Calendar.EventTemplate>
+                <DataTemplate>
+                    <VerticalStackLayout Padding="15,10" Spacing="2">
+                        <Label Text="{Binding Name}" TextColor="White" FontSize="18" FontAttributes="Bold" />
+                        <Label Text="{Binding Description}" TextColor="Gray" FontSize="14" />
+                        <BoxView HeightRequest="1" Color="#333333" Margin="0,5" />
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </controls:Calendar.EventTemplate>
+        </controls:Calendar>
+
+        <!-- Liste scrollable des événements du jour sélectionné -->
+        <ScrollView Grid.Row="1" Padding="15,0">
+            <CollectionView x:Name="DayEventsList"
+                        ItemsSource="{Binding SelectedDayEvents}">
+                <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <VerticalStackLayout Padding="15,10" Spacing="2">
-                            <Label Text="{Binding Name}" TextColor="White" FontSize="18" FontAttributes="Bold" />
-                            <Label Text="{Binding Description}" TextColor="Gray" FontSize="14" />
+                        <VerticalStackLayout Padding="0,10" Spacing="2">
+                            <Label Text="{Binding Name}" 
+                               TextColor="White" 
+                               FontSize="18" 
+                               FontAttributes="Bold" />
+                            <Label Text="{Binding Description}" 
+                               TextColor="Gray" 
+                               FontSize="14" />
                             <BoxView HeightRequest="1" Color="#333333" Margin="0,5" />
                         </VerticalStackLayout>
                     </DataTemplate>
-                </controls:Calendar.EventTemplate>
-            </controls:Calendar>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
         </ScrollView>
 
-        <Grid Grid.Row="1" 
-              ColumnDefinitions="*, *" 
-              ColumnSpacing="15" 
-              Padding="20,10,20,30" 
-              BackgroundColor="Transparent">
-
-            <Button Grid.Column="0" 
-                    Text="Commencer" 
-                    BackgroundColor="#1DB954" 
-                    TextColor="White" 
-                    FontAttributes="Bold" 
-                    CornerRadius="12"
-                    HeightRequest="55"
-                    Clicked="onClickButton1" />
-
-            <Button Grid.Column="1" 
-                    Text="Plannifier" 
-                    BackgroundColor="#E67E22" 
-                    TextColor="White" 
-                    FontAttributes="Bold" 
-                    CornerRadius="12"
-                    HeightRequest="55"
-                    Clicked="onClickButton2" />
+        <!-- Boutons en bas -->
+        <Grid Grid.Row="2"
+          ColumnDefinitions="*, *"
+          ColumnSpacing="15"
+          Padding="20,10,20,30"
+          BackgroundColor="Transparent">
+            <Button Grid.Column="0"
+                Text="Commencer"
+                BackgroundColor="#1DB954"
+                TextColor="White"
+                FontAttributes="Bold"
+                CornerRadius="12"
+                HeightRequest="55"
+                Clicked="onClickButton1" />
+            <Button Grid.Column="1"
+                Text="Plannifier"
+                BackgroundColor="#E67E22"
+                TextColor="White"
+                FontAttributes="Bold"
+                CornerRadius="12"
+                HeightRequest="55"
+                Clicked="onClickButton2" />
         </Grid>
-
     </Grid>
 </ContentPage>

@@ -1,14 +1,51 @@
 using RepNote.Models;
 using RepNote.Services;
 using System.Collections.ObjectModel;
-/*  Lieu: ETML
-    Auteur: Ryan Läuppi
-    Date: 13.05.2026*/
+using System.Globalization;
+//Réalisé par Ryan Läuppi (Ryancmoi)
 namespace RepNote;
+
+[QueryProperty(nameof(SelectedDateString), "date")]
 public partial class PlanifSerie : ContentPage
 {
-    public ObservableCollection<string> MyWorkouts { get; set; } = [];
+    public ObservableCollection<string> MyWorkouts { get; set; } = new();
     private readonly WorkoutService _workoutService;
+    private DateTime _selectedDate = DateTime.Now;
+
+    // Reçu depuis MainPage via Shell navigation
+    public string SelectedDateString
+    {
+        set
+        {
+            if (DateTime.TryParseExact(value, "yyyy-MM-dd",
+                CultureInfo.InvariantCulture, DateTimeStyles.None, out var d))
+            {
+                _selectedDate = d;
+            }
+        }
+    }
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        await LoadExistingWorkoutsAsync();
+    }
+
+    private async Task LoadExistingWorkoutsAsync()
+    {
+        var data = await _workoutService.LoadWorkoutsAsync();
+
+        var existing = data.Workouts
+            .FirstOrDefault(w => w.Date.Date == _selectedDate.Date);
+
+        if (existing != null)
+        {
+            MyWorkouts.Clear();
+            foreach (var exercise in existing.Exercises)
+            {
+                MyWorkouts.Add(exercise.Name);
+            }
+        }
+    }
 
     public PlanifSerie()
     {
@@ -17,9 +54,8 @@ public partial class PlanifSerie : ContentPage
         SeriesList.ItemsSource = MyWorkouts;
     }
 
-    public async void OnAddSeriesClicked(object sender, EventArgs e)
+    public void OnAddSeriesClicked(object sender, EventArgs e)
     {
-        //recupération de l'input
         string workoutName = SeriesEntry.Text;
         if (!string.IsNullOrEmpty(workoutName))
         {
@@ -32,36 +68,60 @@ public partial class PlanifSerie : ContentPage
     {
         try
         {
-            // Charger les données existantes
+            if (!string.IsNullOrWhiteSpace(SeriesEntry.Text))
+            {
+                MyWorkouts.Add(SeriesEntry.Text.Trim());
+                SeriesEntry.Text = string.Empty;
+            }
+
+            if (MyWorkouts.Count == 0)
+            {
+                await DisplayAlert("Attention", "Aucune série à enregistrer", "OK");
+                return;
+            }
+
             var data = await _workoutService.LoadWorkoutsAsync();
 
-            // Créer un nouveau workout
-            var newWorkout = new Workout
+            var existing = data.Workouts
+                .FirstOrDefault(w => w.Date.Date == _selectedDate.Date);
+
+            if (existing != null)
             {
-                Id = data.Workouts.Count + 1,
-                Date = DateTime.Now,
-                Status = "completed",
-                DurationSeconds = 0
-            };
+                existing.Exercises = MyWorkouts.Select(name => new Exercise
+                {
+                    Name = name,
+                    PlannedSets = new List<WorkoutSet>(),
+                    ActualSets = new List<WorkoutSet>()
+                }).ToList();
+            }
+            else
+            {
+                var newWorkout = new Workout
+                {
+                    Id = data.Workouts.Count + 1,
+                    Date = _selectedDate,
+                    Status = "planned",
+                    DurationSeconds = 0,
+                    Exercises = MyWorkouts.Select(name => new Exercise
+                    {
+                        Name = name,
+                        PlannedSets = new List<WorkoutSet>(),
+                        ActualSets = new List<WorkoutSet>()
+                    }).ToList()
+                };
+                data.Workouts.Add(newWorkout);
+            }
 
-            // Ajouter le workout à la liste
-            data.Workouts.Add(newWorkout);
-
-            // Sauvegarder dans le JSON
             await _workoutService.SaveWorkoutsAsync(data);
+            await DisplayAlert("Succès",
+                $"Séance planifiée pour le {_selectedDate:dd/MM/yyyy}", "OK");
 
-            // Afficher un message de succès
-            await DisplayAlert("Succès", "Séance terminée et sauvegardée", "OK");
-
-            // Réinitialiser les séries
             MyWorkouts.Clear();
-
-            // Revenir à la page précédente
             await Shell.Current.GoToAsync("..");
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erreur", $"Erreur lors de la sauvegarde : {ex.Message}", "OK");
+            await DisplayAlert("Erreur", $"Erreur : {ex.Message}", "OK");
         }
     }
 }
