@@ -3,33 +3,37 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RepNote.PlanifExercice"
              Title="PlanifExercice">
-    <!--Lieu: ETML
+    <!--  Lieu: ETML
     Auteur: Thomas Peltier
-    Date: 29.04.2026-->
-
+    Date: 06.05.2026-->
+    
+    
     <ScrollView>
         <Grid RowDefinitions="Auto, *, Auto" Padding="25, 10, 25, 20">
 
-            <!-- Header -->
             <VerticalStackLayout Grid.Row="0" Spacing="5" Margin="0,0,0,20">
                 <Label Text="RepNote" TextColor="White" HorizontalOptions="Center" FontSize="13" FontAttributes="Bold" />
                 <Label Text="Plannification" TextColor="White" FontSize="32" FontAttributes="Bold" Margin="0,20,0,0"/>
             </VerticalStackLayout>
 
-            <!-- Contenu Principal -->
             <VerticalStackLayout Grid.Row="1" Spacing="20">
 
-                <!-- Section Modifier Nom -->
                 <Label Text="Modifier un exercice" TextColor="#8E8E8E" FontSize="16" />
                 <Frame BackgroundColor="#1A1A1A" CornerRadius="20" HasShadow="False" Padding="20, 20">
                     <VerticalStackLayout Spacing="0">
-                        <Label Text="Pompe" TextColor="#8E8E8E" FontSize="15" FontAttributes="Bold" />
+                        <Label x:Name="ExerciseNameLabel" Text="Pompe" TextColor="#8E8E8E" FontSize="15" FontAttributes="Bold" />
+
+                        <Entry x:Name="ExerciseEditEntry" Text="Pompe" TextColor="White" IsVisible="False" 
+                               Completed="OnExerciseNameCompleted" />
+
                         <BoxView HeightRequest="1" Color="#333333" Margin="0,5,0,10" />
-                        <Button Text="Modifier" TextColor="#3498DB" BackgroundColor="Transparent" HorizontalOptions="Start" Padding="0" HeightRequest="30" FontAttributes="Bold" />
+
+                        <Button x:Name="ModifyBtn" Text="Modifier" Clicked="OnModifyExerciseClicked" 
+                                TextColor="#3498DB" BackgroundColor="Transparent" HorizontalOptions="Start" 
+                                Padding="0" HeightRequest="30" FontAttributes="Bold" />
                     </VerticalStackLayout>
                 </Frame>
 
-                <!-- Section Ajouter Série -->
                 <Label Text="Ajouter une série" TextColor="#8E8E8E" FontSize="16" />
                 <Frame BackgroundColor="#1A1A1A" CornerRadius="20" HasShadow="False" Padding="20, 20">
                     <VerticalStackLayout Spacing="5">
@@ -45,7 +49,6 @@
                     </VerticalStackLayout>
                 </Frame>
 
-                <!-- Liste des séries ajoutées -->
                 <Label Text="Série ajoutés" TextColor="#8E8E8E" FontSize="16" />
                 <CollectionView x:Name="SeriesList">
                     <CollectionView.ItemTemplate>
@@ -60,7 +63,10 @@
                                     </HorizontalStackLayout>
 
                                     <Button Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Text="✎" FontSize="22" TextColor="#3498DB" BackgroundColor="Transparent" WidthRequest="40" VerticalOptions="Center" />
-                                    <Button Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" Text="🗑" FontSize="22" TextColor="#3498DB" BackgroundColor="Transparent" WidthRequest="40" VerticalOptions="Center" />
+
+                                    <Button Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" Text="🗑" 
+                                            Clicked="OnDeleteSerieClicked" CommandParameter="{Binding .}"
+                                            FontSize="22" TextColor="#3498DB" BackgroundColor="Transparent" WidthRequest="40" VerticalOptions="Center" />
                                 </Grid>
                             </Frame>
                         </DataTemplate>
@@ -68,7 +74,6 @@
                 </CollectionView>
             </VerticalStackLayout>
 
-            <!-- Footer -->
             <Button Grid.Row="2" Text="Terminer la séance" BackgroundColor="#EF4444" TextColor="White" HeightRequest="55" CornerRadius="15" FontSize="16" FontAttributes="Bold" Margin="0,20,0,0" />
 
         </Grid>
