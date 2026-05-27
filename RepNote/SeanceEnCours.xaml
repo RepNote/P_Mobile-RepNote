@@ -1,5 +1,5 @@
-        <!-- Réalisé par Latif Krasniqi (latifcodess) -->
-    
+<!-- Réalisé par Latif Krasniqi (latifcodess) -->
+
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RepNote.SeanceEnCours"
@@ -57,11 +57,7 @@
                                PlaceholderColor="#888888"
                                TextColor="White"
                                FontSize="15"
-                               BackgroundColor="Transparent">
-                            <Entry.Behaviors>
-                                <!-- Entry underline via custom renderer or use BoxView below -->
-                            </Entry.Behaviors>
-                        </Entry>
+                               BackgroundColor="Transparent" />
 
                         <!-- Underline -->
                         <BoxView HeightRequest="1"
@@ -75,20 +71,88 @@
                                TextColor="#2196F3"
                                HorizontalOptions="Start">
                             <Label.GestureRecognizers>
-                                <!-- <TapGestureRecognizer Tapped="OnAjouterExerciceTapped" /> -->
+                                <TapGestureRecognizer Tapped="OnAjouterExerciceTapped" />
                             </Label.GestureRecognizers>
                         </Label>
 
                     </VerticalStackLayout>
                 </Border>
 
-                <!-- Section: Exercice planifié -->
-                <Label Text="Exercice planifié"
+                <!-- Section: Exercices planifiés -->
+                <Label Text="Exercices planifiés"
                        FontSize="15"
                        FontAttributes="Bold"
                        TextColor="White"
                        Margin="0,0,0,10" />
 
+                <Label x:Name="EmptyPlannedLabel"
+                       Text="Aucun exercice planifié pour aujourd'hui"
+                       FontSize="14"
+                       TextColor="#888888"
+                       HorizontalOptions="Center"
+                       Margin="0,10,0,10"
+                       IsVisible="False" />
+
+                <CollectionView x:Name="PlannedExercisesList" Margin="0,0,0,24">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border BackgroundColor="#2A2A2A"
+                                    StrokeThickness="0"
+                                    Margin="0,0,0,12">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="12" />
+                                </Border.StrokeShape>
+                                <VerticalStackLayout Padding="16,14" Spacing="6">
+                                    <Label Text="{Binding Name}"
+                                           FontSize="16"
+                                           FontAttributes="Bold"
+                                           TextColor="White" />
+                                    <Label Text="{Binding SetsSummary}"
+                                           FontSize="14"
+                                           TextColor="#CCCCCC" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Section: Exercices ajoutés -->
+                <Label Text="Exercices ajoutés"
+                       FontSize="15"
+                       FontAttributes="Bold"
+                       TextColor="White"
+                       Margin="0,0,0,10" />
+
+                <Label x:Name="EmptyAddedLabel"
+                       Text="Aucun exercice ajouté"
+                       FontSize="14"
+                       TextColor="#888888"
+                       HorizontalOptions="Center"
+                       Margin="0,10,0,10"
+                       IsVisible="False" />
+
+                <CollectionView x:Name="AddedExercisesList">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border BackgroundColor="#2A2A2A"
+                                    StrokeThickness="0"
+                                    Margin="0,0,0,12">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="12" />
+                                </Border.StrokeShape>
+                                <VerticalStackLayout Padding="16,14" Spacing="6">
+                                    <Label Text="{Binding Name}"
+                                           FontSize="16"
+                                           FontAttributes="Bold"
+                                           TextColor="White" />
+                                    <Label Text="{Binding SetsSummary}"
+                                           FontSize="14"
+                                           TextColor="#CCCCCC" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
 
             </VerticalStackLayout>
         </ScrollView>
