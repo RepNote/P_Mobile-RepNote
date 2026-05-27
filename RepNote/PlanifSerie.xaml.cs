@@ -6,7 +6,7 @@ using System.Globalization;
 namespace RepNote;
 
 /*  Lieu: ETML
-    Auteur: Ryan Läuppi (Ryancmoi)
+    Auteur: Ryan LÃ¤uppi (Ryancmoi)
     Date: 13.05.2026*/
 [QueryProperty(nameof(SelectedDateString), "date")]
 public partial class PlanifSerie : ContentPage
@@ -15,7 +15,7 @@ public partial class PlanifSerie : ContentPage
     private readonly WorkoutService _workoutService;
     private DateTime _selectedDate = DateTime.Now;
 
-    // Reçu depuis MainPage via Shell navigation
+    // ReÃ§u depuis MainPage via Shell navigation
     public string SelectedDateString
     {
         set
@@ -159,14 +159,14 @@ public partial class PlanifSerie : ContentPage
 
             if (MyWorkouts.Count == 0)
             {
-                await DisplayAlert("Attention", "Aucun exercice à enregistrer", "OK");
+                await DisplayAlert("Attention", "Aucun exercice Ã  enregistrer", "OK");
                 return;
             }
 
             await SaveWorkoutsStateAsync();
 
-            await DisplayAlert("Succès",
-                $"Séance planifiée pour le {_selectedDate:dd/MM/yyyy}", "OK");
+            await DisplayAlert("SuccÃ¨s",
+                $"SÃ©ance planifiÃ©e pour le {_selectedDate:dd/MM/yyyy}", "OK");
 
             MyWorkouts.Clear();
             await Shell.Current.GoToAsync("..");
