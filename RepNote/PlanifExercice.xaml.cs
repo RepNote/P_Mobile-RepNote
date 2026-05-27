@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using RepNote.Models;
 using RepNote.Services;
 
@@ -7,75 +8,135 @@ namespace RepNote;
 /*  Lieu: ETML
     Auteur: Thomas Peltier
     Date: 06.05.2026*/
+[QueryProperty(nameof(ExerciseName), "exerciseName")]
+[QueryProperty(nameof(SelectedDateString), "date")]
 public partial class PlanifExercice : ContentPage
 {
     public ObservableCollection<SerieData> AddedSeries { get; set; }
     private WorkoutService _workoutService = new WorkoutService();
+
+    private string _exerciseName;
+    public string ExerciseName
+    {
+        get => _exerciseName;
+        set
+        {
+            _exerciseName = Uri.UnescapeDataString(value);
+            OnPropertyChanged();
+        }
+    }
+
+    private DateTime _selectedDate = DateTime.Now;
+    public string SelectedDateString
+    {
+        set
+        {
+            if (DateTime.TryParseExact(value, "yyyy-MM-dd",
+                CultureInfo.InvariantCulture, DateTimeStyles.None, out var d))
+            {
+                _selectedDate = d;
+            }
+        }
+    }
 
     public PlanifExercice()
     {
         InitializeComponent();
         AddedSeries = new ObservableCollection<SerieData>();
         SeriesList.ItemsSource = AddedSeries;
+    }
 
-        _ = LoadSavedData();
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        await LoadSavedData();
     }
 
     private async Task LoadSavedData()
     {
+        if (string.IsNullOrEmpty(_exerciseName))
+            return;
+
         var root = await _workoutService.LoadWorkoutsAsync();
 
-        if (root.Workouts != null && root.Workouts.Any())
+        var workout = root.Workouts.FirstOrDefault(w => w.Date.Date == _selectedDate.Date);
+        if (workout != null)
         {
-            var lastWorkout = root.Workouts.Last();
-            var lastExercise = lastWorkout.Exercises.LastOrDefault();
-
-            if (lastExercise != null)
+            var exercise = workout.Exercises.FirstOrDefault(e => e.Name == _exerciseName);
+            if (exercise != null)
             {
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    ExerciseNameLabel.Text = lastExercise.Name;
+                    ExerciseNameLabel.Text = exercise.Name;
                     AddedSeries.Clear();
                     int count = 1;
-                    foreach (var set in lastExercise.PlannedSets)
+                    foreach (var set in exercise.PlannedSets)
                     {
                         AddedSeries.Add(new SerieData
                         {
-                            Numero = $"S�rie {count++}",
+                            Numero = $"Série {count++}",
                             Reps = set.Reps.ToString(),
                             Poids = set.Weight.ToString()
                         });
                     }
                 });
+                return;
             }
         }
+
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            ExerciseNameLabel.Text = _exerciseName;
+            AddedSeries.Clear();
+        });
     }
 
     private async Task SaveCurrentState()
     {
+        if (string.IsNullOrEmpty(_exerciseName))
+            return;
+
         var root = await _workoutService.LoadWorkoutsAsync();
 
-        var currentWorkout = new Workout
+        var workout = root.Workouts.FirstOrDefault(w => w.Date.Date == _selectedDate.Date);
+        if (workout == null)
         {
-            Id = 1,
-            Date = DateTime.Now,
-            Status = "In Progress",
-            Exercises = new List<Exercise>
+            workout = new Workout
             {
-                new Exercise
-                {
-                    Name = ExerciseNameLabel.Text,
-                    PlannedSets = AddedSeries.Select(s => new WorkoutSet
-                    {
-                        Reps = int.TryParse(s.Reps, out int r) ? r : 0,
-                        Weight = double.TryParse(s.Poids, out double p) ? p : 0
-                    }).ToList()
-                }
-            }
-        };
+                Id = root.Workouts.Count + 1,
+                Date = _selectedDate,
+                Status = "planned",
+                DurationSeconds = 0,
+                Exercises = new List<Exercise>()
+            };
+            root.Workouts.Add(workout);
+        }
 
-        root.Workouts = new List<Workout> { currentWorkout };
+        var exercise = workout.Exercises.FirstOrDefault(e => e.Name == _exerciseName);
+        if (exercise == null)
+        {
+            exercise = new Exercise
+            {
+                Name = _exerciseName,
+                PlannedSets = new List<WorkoutSet>(),
+                ActualSets = new List<WorkoutSet>()
+            };
+            workout.Exercises.Add(exercise);
+        }
+
+        exercise.PlannedSets = AddedSeries.Select(s => new WorkoutSet
+        {
+            Reps = int.TryParse(s.Reps, out int r) ? r : 0,
+            Weight = double.TryParse(s.Poids, out double p) ? p : 0
+        }).ToList();
+
         await _workoutService.SaveWorkoutsAsync(root);
+    }
+
+    private async void OnTerminerClicked(object sender, EventArgs e)
+    {
+        await SaveCurrentState();
+        await Shell.Current.GoToAsync("../..");
     }
 
     private void OnModifyExerciseClicked(object sender, EventArgs e)
@@ -92,7 +153,28 @@ public partial class PlanifExercice : ContentPage
         ExerciseNameLabel.IsVisible = true;
         ExerciseEditEntry.IsVisible = false;
         ModifyBtn.IsVisible = true;
-        await SaveCurrentState();
+        
+        string oldName = _exerciseName;
+        string newName = ExerciseEditEntry.Text;
+        if (!string.IsNullOrEmpty(newName) && oldName != newName)
+        {
+            _exerciseName = newName;
+            var root = await _workoutService.LoadWorkoutsAsync();
+            var workout = root.Workouts.FirstOrDefault(w => w.Date.Date == _selectedDate.Date);
+            if (workout != null)
+            {
+                var exercise = workout.Exercises.FirstOrDefault(e => e.Name == oldName);
+                if (exercise != null)
+                {
+                    exercise.Name = newName;
+                    await _workoutService.SaveWorkoutsAsync(root);
+                }
+            }
+        }
+        else
+        {
+            await SaveCurrentState();
+        }
     }
 
     private async void OnAddSerieClicked(object sender, EventArgs e)
@@ -102,7 +184,7 @@ public partial class PlanifExercice : ContentPage
 
         AddedSeries.Add(new SerieData
         {
-            Numero = $"S�rie {AddedSeries.Count + 1}",
+            Numero = $"Série {AddedSeries.Count + 1}",
             Reps = RepsEntry.Text,
             Poids = PoidsEntry.Text
         });
@@ -110,6 +192,25 @@ public partial class PlanifExercice : ContentPage
         RepsEntry.Text = string.Empty;
         PoidsEntry.Text = string.Empty;
 
+        await SaveCurrentState();
+    }
+
+    private async void OnEditSerieClicked(object sender, EventArgs e)
+    {
+        var button = sender as Button;
+        var serie = button?.CommandParameter as SerieData;
+        if (serie == null) return;
+
+        var newReps = await DisplayPromptAsync("Modifier la série", "Répétitions",
+            initialValue: serie.Reps, keyboard: Keyboard.Numeric);
+        if (newReps == null) return;
+
+        var newPoids = await DisplayPromptAsync("Modifier la série", "Poids",
+            initialValue: serie.Poids, keyboard: Keyboard.Numeric);
+        if (newPoids == null) return;
+
+        serie.Reps = newReps;
+        serie.Poids = newPoids;
         await SaveCurrentState();
     }
 
@@ -123,7 +224,7 @@ public partial class PlanifExercice : ContentPage
             AddedSeries.Remove(serie);
             for (int i = 0; i < AddedSeries.Count; i++)
             {
-                AddedSeries[i].Numero = $"S�rie {i + 1}";
+                AddedSeries[i].Numero = $"Série {i + 1}";
             }
             await SaveCurrentState();
         }
@@ -132,13 +233,24 @@ public partial class PlanifExercice : ContentPage
     public class SerieData : System.ComponentModel.INotifyPropertyChanged
     {
         private string _numero;
+        private string _reps;
+        private string _poids;
+
         public string Numero
         {
             get => _numero;
             set { _numero = value; OnPropertyChanged(); }
         }
-        public string Reps { get; set; }
-        public string Poids { get; set; }
+        public string Reps
+        {
+            get => _reps;
+            set { _reps = value; OnPropertyChanged(); }
+        }
+        public string Poids
+        {
+            get => _poids;
+            set { _poids = value; OnPropertyChanged(); }
+        }
 
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string name = null)

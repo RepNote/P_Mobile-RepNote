@@ -1,4 +1,4 @@
-﻿using Plugin.Maui.Calendar.Models;
+using Plugin.Maui.Calendar.Models;
 using RepNote.Services;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -38,13 +38,14 @@ namespace RepNote
         protected override async void OnAppearing()
         {
             base.OnAppearing();
+            SelectedDate = DateTime.Today;
             await LoadEventsAsync();
         }
 
         private async Task LoadEventsAsync()
         {
             var data = await _workoutService.LoadWorkoutsAsync();
-            Events.Clear();
+            var newEvents = new EventCollection();
 
             foreach (var group in data.Workouts.GroupBy(w => w.Date.Date))
             {
@@ -54,12 +55,15 @@ namespace RepNote
                         eventList.Add(new EventModel
                         {
                             Name = exercise.Name,
-                            Description = $"Séance #{workout.Id} – {workout.Status}"
+                            Description = $"Séance #{workout.Id} - {workout.Status}"
                         });
 
-                Events.Add(group.Key, eventList);
+                if (eventList.Any())
+                    newEvents.Add(group.Key, eventList);
             }
 
+            Events = newEvents;
+            OnPropertyChanged(nameof(Events));
             UpdateSelectedDayEvents();
         }
 
