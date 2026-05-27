@@ -35,7 +35,7 @@ Date: 06.05.2026-->
                 <Label Text="Modifier l'exercice" TextColor="#8E8E8E" FontSize="15" />
                 <Frame BackgroundColor="#2D2D2D" CornerRadius="20" HasShadow="False" Padding="20, 15">
                     <VerticalStackLayout Spacing="5">
-                        <Entry Text="Pompe" TextColor="White" FontSize="16" BackgroundColor="Transparent" />
+                        <Entry Text="" TextColor="White" FontSize="16" BackgroundColor="Transparent" />
                         <BoxView HeightRequest="1" Color="#444444" />
                         <Button Text="Modifier" TextColor="#3498DB" BackgroundColor="Transparent" HorizontalOptions="Start" FontAttributes="Bold" Padding="0" HeightRequest="35"/>
                     </VerticalStackLayout>

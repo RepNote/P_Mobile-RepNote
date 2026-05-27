@@ -1,4 +1,4 @@
-﻿namespace RepNote
+namespace RepNote
 {
     public partial class AppShell : Shell
     {
@@ -9,7 +9,7 @@
             Routing.RegisterRoute("PlanifSerie", typeof(PlanifSerie));
             Routing.RegisterRoute("MainPage", typeof(MainPage));
             Routing.RegisterRoute("SeanceEnCours", typeof(SeanceEnCours));
-            Routing.RegisterRoute("PlanifSerie", typeof (PlanifSerie));
+            Routing.RegisterRoute("PlanifExercice", typeof(PlanifExercice));
         }
     }
 }
