@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using RepNote.Models;
 using RepNote.Services;
 
@@ -9,6 +9,7 @@ public partial class SeanceEnCours : ContentPage
     private IDispatcherTimer _timer;
     private DateTime _startTime;
     private TimeSpan _elapsed;
+    private TimeSpan _accumulatedElapsed;
 
     private readonly WorkoutService _workoutService = new();
     private readonly DateTime _sessionDate = DateTime.Now.Date;
@@ -16,6 +17,9 @@ public partial class SeanceEnCours : ContentPage
     public ObservableCollection<ExerciseDisplay> PlannedExercises { get; } = new();
     public ObservableCollection<ExerciseDisplay> AddedExercises { get; } = new();
 
+    /// <summary>
+    /// Initialise les listes d'exercices
+    /// </summary>
     public SeanceEnCours()
     {
         InitializeComponent();
@@ -23,20 +27,36 @@ public partial class SeanceEnCours : ContentPage
         AddedExercisesList.ItemsSource = AddedExercises;
     }
 
-    protected override async void OnAppearing()
+    /// <summary>
+    /// Démarre le chronomètre à l'affichage de la page
+    /// </summary>
+    protected override void OnAppearing()
     {
         base.OnAppearing();
         StartTimer();
+    }
+
+    /// <summary>
+    /// Recharge les exercices après chaque navigation
+    /// </summary>
+    protected override async void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        base.OnNavigatedTo(args);
         await LoadExercisesAsync();
     }
 
+    /// <summary>
+    /// Arrête le chronomètre quand on quitte la page
+    /// </summary>
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
         StopTimer();
     }
 
-    // ---------- Chronomètre ----------
+    /// <summary>
+    /// Crée et démarre le timer d'une seconde
+    /// </summary>
     private void StartTimer()
     {
         _startTime = DateTime.Now;
@@ -46,28 +66,41 @@ public partial class SeanceEnCours : ContentPage
         _timer.Start();
     }
 
+    /// <summary>
+    /// Accumule le temps écoulé et arrête le timer
+    /// </summary>
     private void StopTimer()
     {
         if (_timer != null)
         {
+            _accumulatedElapsed += DateTime.Now - _startTime;
             _timer.Stop();
             _timer.Tick -= OnTimerTick;
             _timer = null;
         }
     }
 
+    /// <summary>
+    /// Met à jour l'affichage du chronomètre chaque seconde
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void OnTimerTick(object sender, EventArgs e)
     {
-        _elapsed = DateTime.Now - _startTime;
+        _elapsed = _accumulatedElapsed + (DateTime.Now - _startTime);
         string format = _elapsed.TotalHours >= 1 ? @"hh\:mm\:ss" : @"mm\:ss";
         TimerLabel.Text = $"Temps écoulé : {_elapsed.ToString(format)}";
     }
 
-    // ---------- Chargement des exercices ----------
+    /// <summary>
+    /// Charge les exercices planifiés et ajoutés depuis le JSON
+    /// </summary>
     private async Task LoadExercisesAsync()
     {
         var root = await _workoutService.LoadWorkoutsAsync();
         var workout = root.Workouts.FirstOrDefault(w => w.Date.Date == _sessionDate);
+
+        System.Diagnostics.Debug.WriteLine($"[SeanceEnCours] Workout trouvé: {workout != null}, date: {_sessionDate:yyyy-MM-dd}");
 
         PlannedExercises.Clear();
         AddedExercises.Clear();
@@ -76,8 +109,8 @@ public partial class SeanceEnCours : ContentPage
         {
             foreach (var ex in workout.Exercises)
             {
-                // Planifié = a au moins une série prévue
-                if (ex.PlannedSets is { Count: > 0 })
+                System.Diagnostics.Debug.WriteLine($"[SeanceEnCours] Exercice: {ex.Name}, IsPlanned: {ex.IsPlanned}, ActualSets: {ex.ActualSets?.Count ?? 0}");
+                if (ex.IsPlanned)
                     PlannedExercises.Add(ToDisplay(ex));
                 else
                     AddedExercises.Add(ToDisplay(ex));
@@ -88,19 +121,21 @@ public partial class SeanceEnCours : ContentPage
         EmptyAddedLabel.IsVisible = AddedExercises.Count == 0;
     }
 
+    /// <summary>
+    /// Convertit un exercice en objet d'affichage avec résumé des séries
+    /// </summary>
+    /// <param name="ex"></param>
     private ExerciseDisplay ToDisplay(Exercise ex)
     {
         string summary;
 
         if (ex.PlannedSets is { Count: > 0 })
         {
-            // Exercice planifié → affiche les séries prévues
             summary = string.Join("  •  ",
                 ex.PlannedSets.Select((s, i) => $"S{i + 1} : {s.Reps} reps × {s.Weight} kg"));
         }
         else if (ex.ActualSets is { Count: > 0 })
         {
-            // Exercice ajouté avec des séries réalisées
             summary = string.Join("  •  ",
                 ex.ActualSets.Select((s, i) => $"S{i + 1} : {s.Reps} reps × {s.Weight} kg"));
         }
@@ -116,7 +151,11 @@ public partial class SeanceEnCours : ContentPage
         };
     }
 
-    // ---------- Ajout d'un nouvel exercice ----------
+    /// <summary>
+    /// Ajoute un nouvel exercice à la séance
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private async void OnAjouterExerciceTapped(object sender, EventArgs e)
     {
         var name = NomExerciceEntry.Text?.Trim();
@@ -124,7 +163,6 @@ public partial class SeanceEnCours : ContentPage
             return;
 
         bool alreadyExists =
-            PlannedExercises.Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) ||
             AddedExercises.Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
         if (alreadyExists)
@@ -133,7 +171,6 @@ public partial class SeanceEnCours : ContentPage
             return;
         }
 
-        // Sauvegarde dans le JSON
         var root = await _workoutService.LoadWorkoutsAsync();
         var workout = root.Workouts.FirstOrDefault(w => w.Date.Date == _sessionDate);
 
@@ -153,19 +190,81 @@ public partial class SeanceEnCours : ContentPage
         var newExercise = new Exercise
         {
             Name = name,
+            IsPlanned = false,
             PlannedSets = new List<WorkoutSet>(),
             ActualSets = new List<WorkoutSet>()
         };
         workout.Exercises.Add(newExercise);
         await _workoutService.SaveWorkoutsAsync(root);
 
-        // Va dans la liste des exercices ajoutés (pas planifiés)
         AddedExercises.Add(ToDisplay(newExercise));
         NomExerciceEntry.Text = string.Empty;
         EmptyAddedLabel.IsVisible = false;
     }
 
-    // ---------- Fin de séance ----------
+    /// <summary>
+    /// Navigue vers la page d'ajout de séries pour l'exercice sélectionné
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private async void OnAddedExerciseTapped(object sender, TappedEventArgs e)
+    {
+        var name = e.Parameter as string;
+        if (string.IsNullOrEmpty(name)) return;
+
+        await Shell.Current.GoToAsync(
+            $"AjoutSeriesSeance?exerciseName={Uri.EscapeDataString(name)}&date={_sessionDate:yyyy-MM-dd}");
+    }
+
+    /// <summary>
+    /// Renomme un exercice ajouté pendant la séance
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private async void OnEditAddedExerciseClicked(object sender, EventArgs e)
+    {
+        var name = (sender as Button)?.CommandParameter as string;
+        if (string.IsNullOrEmpty(name)) return;
+
+        var newName = await DisplayPromptAsync("Modifier", "Nouveau nom de l'exercice", initialValue: name);
+        newName = newName?.Trim();
+        if (string.IsNullOrEmpty(newName) || newName == name) return;
+
+        var root = await _workoutService.LoadWorkoutsAsync();
+        var workout = root.Workouts.FirstOrDefault(w => w.Date.Date == _sessionDate);
+        var exercise = workout?.Exercises.FirstOrDefault(ex => ex.Name == name && !ex.IsPlanned);
+        if (exercise == null) return;
+
+        exercise.Name = newName;
+        await _workoutService.SaveWorkoutsAsync(root);
+        await LoadExercisesAsync();
+    }
+
+    /// <summary>
+    /// Supprime un exercice ajouté pendant la séance
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private async void OnDeleteAddedExerciseClicked(object sender, EventArgs e)
+    {
+        var name = (sender as Button)?.CommandParameter as string;
+        if (string.IsNullOrEmpty(name)) return;
+
+        var root = await _workoutService.LoadWorkoutsAsync();
+        var workout = root.Workouts.FirstOrDefault(w => w.Date.Date == _sessionDate);
+        var exercise = workout?.Exercises.FirstOrDefault(ex => ex.Name == name && !ex.IsPlanned);
+        if (exercise == null) return;
+
+        workout.Exercises.Remove(exercise);
+        await _workoutService.SaveWorkoutsAsync(root);
+        await LoadExercisesAsync();
+    }
+
+    /// <summary>
+    /// Termine la séance, sauvegarde la durée et revient à l'accueil
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     public async void onButtonClicked(object sender, EventArgs e)
     {
         StopTimer();
@@ -176,14 +275,16 @@ public partial class SeanceEnCours : ContentPage
         if (workout != null)
         {
             workout.Status = "completed";
-            workout.DurationSeconds = (int)_elapsed.TotalSeconds;
+            workout.DurationSeconds += (int)_elapsed.TotalSeconds;
             await _workoutService.SaveWorkoutsAsync(root);
         }
 
         await Shell.Current.GoToAsync("..");
     }
 
-    // ---------- DTO pour l'affichage ----------
+    /// <summary>
+    /// DTO pour l'affichage d'un exercice dans la liste
+    /// </summary>
     public class ExerciseDisplay
     {
         public string Name { get; set; }

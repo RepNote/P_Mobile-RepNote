@@ -140,15 +140,39 @@
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="12" />
                                 </Border.StrokeShape>
-                                <VerticalStackLayout Padding="16,14" Spacing="6">
-                                    <Label Text="{Binding Name}"
-                                           FontSize="16"
-                                           FontAttributes="Bold"
-                                           TextColor="White" />
-                                    <Label Text="{Binding SetsSummary}"
-                                           FontSize="14"
-                                           TextColor="#CCCCCC" />
-                                </VerticalStackLayout>
+                                <Grid ColumnDefinitions="*, Auto, Auto" Padding="16,14">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="6">
+                                        <VerticalStackLayout.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="OnAddedExerciseTapped"
+                                                                  CommandParameter="{Binding Name}" />
+                                        </VerticalStackLayout.GestureRecognizers>
+                                        <Label Text="{Binding Name}"
+                                               FontSize="16"
+                                               FontAttributes="Bold"
+                                               TextColor="White" />
+                                        <Label Text="{Binding SetsSummary}"
+                                               FontSize="14"
+                                               TextColor="#CCCCCC" />
+                                    </VerticalStackLayout>
+                                    <Button Grid.Column="1"
+                                            Text="✎"
+                                            FontSize="20"
+                                            TextColor="#2196F3"
+                                            BackgroundColor="Transparent"
+                                            WidthRequest="45"
+                                            Padding="0"
+                                            Clicked="OnEditAddedExerciseClicked"
+                                            CommandParameter="{Binding Name}" />
+                                    <Button Grid.Column="2"
+                                            Text="🗑"
+                                            FontSize="20"
+                                            TextColor="#2196F3"
+                                            BackgroundColor="Transparent"
+                                            WidthRequest="45"
+                                            Padding="0"
+                                            Clicked="OnDeleteAddedExerciseClicked"
+                                            CommandParameter="{Binding Name}" />
+                                </Grid>
                             </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>

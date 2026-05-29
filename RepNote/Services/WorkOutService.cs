@@ -1,8 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Text.Json;
 using RepNote.Models;
 //Réalisé par Ryan Läuppi (Ryancmoi)
@@ -13,11 +8,17 @@ namespace RepNote.Services
     {
         private readonly string _filePath;
 
+        /// <summary>
+        /// Définit le chemin du fichier JSON de stockage
+        /// </summary>
         public WorkoutService()
         {
             _filePath = Path.Combine(FileSystem.AppDataDirectory, "db.json");
         }
 
+        /// <summary>
+        /// Charge et désérialise les workouts depuis le fichier JSON
+        /// </summary>
         public async Task<WorkoutRoot> LoadWorkoutsAsync()
         {
             try
@@ -35,6 +36,10 @@ namespace RepNote.Services
             }
         }
 
+        /// <summary>
+        /// Sérialise et sauvegarde les workouts dans le fichier JSON
+        /// </summary>
+        /// <param name="root"></param>
         public async Task SaveWorkoutsAsync(WorkoutRoot root)
         {
             try
