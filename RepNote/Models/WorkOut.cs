@@ -37,6 +37,9 @@ namespace RepNote.Models
         [JsonPropertyName("name")]
         public string Name { get; set; }
 
+        [JsonPropertyName("is_planned")]
+        public bool IsPlanned { get; set; }
+
         [JsonPropertyName("planned_sets")]
         public List<WorkoutSet> PlannedSets { get; set; } = new();
 

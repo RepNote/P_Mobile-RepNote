@@ -39,6 +39,9 @@ public partial class PlanifExercice : ContentPage
         }
     }
 
+    /// <summary>
+    /// Initialise la liste des séries planifiées
+    /// </summary>
     public PlanifExercice()
     {
         InitializeComponent();
@@ -46,12 +49,18 @@ public partial class PlanifExercice : ContentPage
         SeriesList.ItemsSource = AddedSeries;
     }
 
+    /// <summary>
+    /// Charge les données sauvegardées à l'affichage de la page
+    /// </summary>
     protected override async void OnAppearing()
     {
         base.OnAppearing();
         await LoadSavedData();
     }
 
+    /// <summary>
+    /// Charge les séries planifiées de l'exercice depuis le JSON
+    /// </summary>
     private async Task LoadSavedData()
     {
         if (string.IsNullOrEmpty(_exerciseName))
@@ -91,6 +100,9 @@ public partial class PlanifExercice : ContentPage
         });
     }
 
+    /// <summary>
+    /// Sauvegarde les séries planifiées de l'exercice dans le JSON
+    /// </summary>
     private async Task SaveCurrentState()
     {
         if (string.IsNullOrEmpty(_exerciseName))
@@ -133,12 +145,22 @@ public partial class PlanifExercice : ContentPage
         await _workoutService.SaveWorkoutsAsync(root);
     }
 
+    /// <summary>
+    /// Sauvegarde et retourne à la planification
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private async void OnTerminerClicked(object sender, EventArgs e)
     {
         await SaveCurrentState();
         await Shell.Current.GoToAsync("../..");
     }
 
+    /// <summary>
+    /// Affiche le champ de saisie pour modifier le nom de l'exercice
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void OnModifyExerciseClicked(object sender, EventArgs e)
     {
         ExerciseNameLabel.IsVisible = false;
@@ -147,13 +169,18 @@ public partial class PlanifExercice : ContentPage
         ModifyBtn.IsVisible = false;
     }
 
+    /// <summary>
+    /// Valide le nouveau nom de l'exercice et sauvegarde
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private async void OnExerciseNameCompleted(object sender, EventArgs e)
     {
         ExerciseNameLabel.Text = ExerciseEditEntry.Text;
         ExerciseNameLabel.IsVisible = true;
         ExerciseEditEntry.IsVisible = false;
         ModifyBtn.IsVisible = true;
-        
+
         string oldName = _exerciseName;
         string newName = ExerciseEditEntry.Text;
         if (!string.IsNullOrEmpty(newName) && oldName != newName)
@@ -177,6 +204,11 @@ public partial class PlanifExercice : ContentPage
         }
     }
 
+    /// <summary>
+    /// Ajoute une série planifiée et sauvegarde
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private async void OnAddSerieClicked(object sender, EventArgs e)
     {
         if (string.IsNullOrWhiteSpace(RepsEntry.Text) || string.IsNullOrWhiteSpace(PoidsEntry.Text))
@@ -195,6 +227,11 @@ public partial class PlanifExercice : ContentPage
         await SaveCurrentState();
     }
 
+    /// <summary>
+    /// Modifie les répétitions et le poids d'une série planifiée
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private async void OnEditSerieClicked(object sender, EventArgs e)
     {
         var button = sender as Button;
@@ -214,6 +251,11 @@ public partial class PlanifExercice : ContentPage
         await SaveCurrentState();
     }
 
+    /// <summary>
+    /// Supprime une série planifiée et renumérote la liste
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private async void OnDeleteSerieClicked(object sender, EventArgs e)
     {
         var button = sender as Button;
@@ -230,6 +272,9 @@ public partial class PlanifExercice : ContentPage
         }
     }
 
+    /// <summary>
+    /// DTO pour l'affichage d'une série planifiée dans la liste
+    /// </summary>
     public class SerieData : System.ComponentModel.INotifyPropertyChanged
     {
         private string _numero;

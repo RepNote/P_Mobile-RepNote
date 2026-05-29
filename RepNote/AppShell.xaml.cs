@@ -7,9 +7,9 @@ namespace RepNote
             InitializeComponent();
 
             Routing.RegisterRoute("PlanifSerie", typeof(PlanifSerie));
-            Routing.RegisterRoute("MainPage", typeof(MainPage));
             Routing.RegisterRoute("SeanceEnCours", typeof(SeanceEnCours));
             Routing.RegisterRoute("PlanifExercice", typeof(PlanifExercice));
+            Routing.RegisterRoute("AjoutSeriesSeance", typeof(AjoutSeriesSeance));
         }
     }
 }

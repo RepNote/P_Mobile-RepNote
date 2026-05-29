@@ -6,7 +6,7 @@ using System.Globalization;
 namespace RepNote;
 
 /*  Lieu: ETML
-    Auteur: Ryan LÃ¤uppi (Ryancmoi)
+    Auteur: Ryan Läuppi (Ryancmoi)
     Date: 13.05.2026*/
 [QueryProperty(nameof(SelectedDateString), "date")]
 public partial class PlanifSerie : ContentPage
@@ -15,7 +15,6 @@ public partial class PlanifSerie : ContentPage
     private readonly WorkoutService _workoutService;
     private DateTime _selectedDate = DateTime.Now;
 
-    // ReÃ§u depuis MainPage via Shell navigation
     public string SelectedDateString
     {
         set
@@ -28,12 +27,18 @@ public partial class PlanifSerie : ContentPage
         }
     }
 
+    /// <summary>
+    /// Charge les exercices planifiés existants à l'affichage
+    /// </summary>
     protected override async void OnAppearing()
     {
         base.OnAppearing();
         await LoadExistingWorkoutsAsync();
     }
 
+    /// <summary>
+    /// Charge uniquement les exercices planifiés depuis le JSON
+    /// </summary>
     private async Task LoadExistingWorkoutsAsync()
     {
         var data = await _workoutService.LoadWorkoutsAsync();
@@ -44,13 +49,16 @@ public partial class PlanifSerie : ContentPage
         if (existing != null)
         {
             MyWorkouts.Clear();
-            foreach (var exercise in existing.Exercises)
+            foreach (var exercise in existing.Exercises.Where(e => e.IsPlanned))
             {
                 MyWorkouts.Add(exercise.Name);
             }
         }
     }
 
+    /// <summary>
+    /// Initialise la liste et le service
+    /// </summary>
     public PlanifSerie()
     {
         InitializeComponent();
@@ -58,6 +66,9 @@ public partial class PlanifSerie : ContentPage
         SeriesList.ItemsSource = MyWorkouts;
     }
 
+    /// <summary>
+    /// Sauvegarde l'état actuel des exercices planifiés sans toucher aux exercices de séance
+    /// </summary>
     private async Task SaveWorkoutsStateAsync()
     {
         var data = await _workoutService.LoadWorkoutsAsync();
@@ -67,30 +78,30 @@ public partial class PlanifSerie : ContentPage
 
         if (existing != null)
         {
+            var sessionExercises = existing.Exercises.Where(e => !e.IsPlanned).ToList();
+
             if (MyWorkouts.Count == 0)
             {
-                data.Workouts.Remove(existing);
+                if (sessionExercises.Count == 0)
+                    data.Workouts.Remove(existing);
+                else
+                    existing.Exercises = sessionExercises;
             }
             else
             {
                 var updatedExercises = new List<Exercise>();
                 foreach (var name in MyWorkouts)
                 {
-                    var oldExercise = existing.Exercises.FirstOrDefault(e => e.Name == name);
-                    if (oldExercise != null)
+                    var oldExercise = existing.Exercises.FirstOrDefault(e => e.Name == name && e.IsPlanned);
+                    updatedExercises.Add(oldExercise ?? new Exercise
                     {
-                        updatedExercises.Add(oldExercise);
-                    }
-                    else
-                    {
-                        updatedExercises.Add(new Exercise
-                        {
-                            Name = name,
-                            PlannedSets = new List<WorkoutSet>(),
-                            ActualSets = new List<WorkoutSet>()
-                        });
-                    }
+                        Name = name,
+                        IsPlanned = true,
+                        PlannedSets = new List<WorkoutSet>(),
+                        ActualSets = new List<WorkoutSet>()
+                    });
                 }
+                updatedExercises.AddRange(sessionExercises);
                 existing.Exercises = updatedExercises;
             }
         }
@@ -105,6 +116,7 @@ public partial class PlanifSerie : ContentPage
                 Exercises = MyWorkouts.Select(name => new Exercise
                 {
                     Name = name,
+                    IsPlanned = true,
                     PlannedSets = new List<WorkoutSet>(),
                     ActualSets = new List<WorkoutSet>()
                 }).ToList()
@@ -115,6 +127,11 @@ public partial class PlanifSerie : ContentPage
         await _workoutService.SaveWorkoutsAsync(data);
     }
 
+    /// <summary>
+    /// Ajoute un exercice à la liste et sauvegarde
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     public async void OnAddSeriesClicked(object sender, EventArgs e)
     {
         string workoutName = SeriesEntry.Text;
@@ -126,6 +143,11 @@ public partial class PlanifSerie : ContentPage
         }
     }
 
+    /// <summary>
+    /// Navigue vers la page de planification des séries d'un exercice
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     public async void OnEditExerciseClicked(object sender, EventArgs e)
     {
         var button = sender as Button;
@@ -136,6 +158,11 @@ public partial class PlanifSerie : ContentPage
         }
     }
 
+    /// <summary>
+    /// Supprime un exercice de la planification et sauvegarde
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     public async void OnDeleteExerciseClicked(object sender, EventArgs e)
     {
         var button = sender as Button;
@@ -147,6 +174,11 @@ public partial class PlanifSerie : ContentPage
         }
     }
 
+    /// <summary>
+    /// Valide et sauvegarde la planification puis retourne à l'accueil
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     public async void onButtonClicked(object sender, EventArgs e)
     {
         try
@@ -159,14 +191,14 @@ public partial class PlanifSerie : ContentPage
 
             if (MyWorkouts.Count == 0)
             {
-                await DisplayAlert("Attention", "Aucun exercice Ã  enregistrer", "OK");
+                await DisplayAlert("Attention", "Aucun exercice à enregistrer", "OK");
                 return;
             }
 
             await SaveWorkoutsStateAsync();
 
-            await DisplayAlert("SuccÃ¨s",
-                $"SÃ©ance planifiÃ©e pour le {_selectedDate:dd/MM/yyyy}", "OK");
+            await DisplayAlert("Succès",
+                $"Séance planifiée pour le {_selectedDate:dd/MM/yyyy}", "OK");
 
             MyWorkouts.Clear();
             await Shell.Current.GoToAsync("..");

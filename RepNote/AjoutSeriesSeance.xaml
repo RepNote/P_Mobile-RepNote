@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Réalisé par Latif Krasniqi (latifcodess) -->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RepNote.AjoutSeriesSeance"
+             Title=""
+             BackgroundColor="#1C1C1C">
+
+    <Shell.TitleView>
+        <Label Text="RepNote"
+               FontSize="18"
+               FontAttributes="Bold"
+               TextColor="White"
+               HorizontalOptions="Center"
+               VerticalOptions="Center" />
+    </Shell.TitleView>
+
+    <Grid RowDefinitions="*, Auto">
+
+        <ScrollView Grid.Row="0" Padding="0,0,0,16">
+            <VerticalStackLayout Spacing="0" Padding="20,20,20,0">
+
+                <!-- Nom de l'exercice -->
+                <Label x:Name="ExerciseNameLabel"
+                       Text=""
+                       FontSize="26"
+                       FontAttributes="Bold"
+                       TextColor="White"
+                       Margin="0,0,0,28" />
+
+                <!-- Ajouter une série -->
+                <Label Text="Ajouter une série"
+                       FontSize="15"
+                       FontAttributes="Bold"
+                       TextColor="White"
+                       Margin="0,0,0,10" />
+
+                <Border BackgroundColor="#2A2A2A"
+                        StrokeThickness="0"
+                        Margin="0,0,0,24">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Padding="16,14" Spacing="12">
+
+                        <Grid ColumnDefinitions="*, *" ColumnSpacing="16">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label Text="Répétitions"
+                                       FontSize="13"
+                                       TextColor="#888888" />
+                                <Entry x:Name="RepsEntry"
+                                       Placeholder="0"
+                                       PlaceholderColor="#555555"
+                                       TextColor="White"
+                                       FontSize="16"
+                                       Keyboard="Numeric"
+                                       BackgroundColor="Transparent" />
+                                <BoxView HeightRequest="1"
+                                         BackgroundColor="#555555" />
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                <Label Text="Poids (kg)"
+                                       FontSize="13"
+                                       TextColor="#888888" />
+                                <Entry x:Name="PoidsEntry"
+                                       Placeholder="0"
+                                       PlaceholderColor="#555555"
+                                       TextColor="White"
+                                       FontSize="16"
+                                       Keyboard="Numeric"
+                                       BackgroundColor="Transparent" />
+                                <BoxView HeightRequest="1"
+                                         BackgroundColor="#555555" />
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <Label Text="Ajouter la série"
+                               FontSize="15"
+                               FontAttributes="Bold"
+                               TextColor="#2196F3"
+                               HorizontalOptions="Start"
+                               Margin="0,4,0,0">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnAddSerieTapped" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Séries réalisées -->
+                <Label Text="Séries réalisées"
+                       FontSize="15"
+                       FontAttributes="Bold"
+                       TextColor="White"
+                       Margin="0,0,0,10" />
+
+                <Label x:Name="EmptyLabel"
+                       Text="Aucune série ajoutée"
+                       FontSize="14"
+                       TextColor="#888888"
+                       HorizontalOptions="Center"
+                       Margin="0,10,0,10"
+                       IsVisible="False" />
+
+                <CollectionView x:Name="SeriesList">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border BackgroundColor="#2A2A2A"
+                                    StrokeThickness="0"
+                                    Margin="0,0,0,10">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="12" />
+                                </Border.StrokeShape>
+                                <Grid Padding="16,12"
+                                      ColumnDefinitions="*, Auto, Auto">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                        <Label Text="{Binding Numero}"
+                                               FontSize="15"
+                                               FontAttributes="Bold"
+                                               TextColor="White" />
+                                        <Label Text="{Binding Details}"
+                                               FontSize="13"
+                                               TextColor="#CCCCCC" />
+                                    </VerticalStackLayout>
+
+                                    <Button Grid.Column="1"
+                                            Text="✎"
+                                            FontSize="18"
+                                            TextColor="#2196F3"
+                                            BackgroundColor="Transparent"
+                                            WidthRequest="40"
+                                            HeightRequest="40"
+                                            Padding="0"
+                                            Clicked="OnEditSerieClicked"
+                                            CommandParameter="{Binding .}" />
+                                    <Button Grid.Column="2"
+                                            Text="🗑"
+                                            FontSize="18"
+                                            TextColor="#2196F3"
+                                            BackgroundColor="Transparent"
+                                            WidthRequest="40"
+                                            HeightRequest="40"
+                                            Padding="0"
+                                            Clicked="OnDeleteSerieClicked"
+                                            CommandParameter="{Binding .}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Bouton retour -->
+        <Border Grid.Row="1"
+                Margin="20,10,20,30"
+                StrokeThickness="0">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="30" />
+            </Border.StrokeShape>
+            <Button Text="Retour à la séance"
+                    FontSize="17"
+                    FontAttributes="Bold"
+                    TextColor="White"
+                    BackgroundColor="#2196F3"
+                    HeightRequest="54"
+                    CornerRadius="30"
+                    Clicked="OnRetourClicked" />
+        </Border>
+
+    </Grid>
+
+</ContentPage>
