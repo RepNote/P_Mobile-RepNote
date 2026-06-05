@@ -73,6 +73,7 @@ public partial class SeanceEnCours : ContentPage
     {
         if (_timer != null)
         {
+            // Sauvegarde le temps écoulé avant d'arrêter pour pouvoir reprendre sans perdre le cumul
             _accumulatedElapsed += DateTime.Now - _startTime;
             _timer.Stop();
             _timer.Tick -= OnTimerTick;
@@ -88,6 +89,7 @@ public partial class SeanceEnCours : ContentPage
     private void OnTimerTick(object sender, EventArgs e)
     {
         _elapsed = _accumulatedElapsed + (DateTime.Now - _startTime);
+        // Passe au format hh:mm:ss si la séance dépasse 1 heure
         string format = _elapsed.TotalHours >= 1 ? @"hh\:mm\:ss" : @"mm\:ss";
         TimerLabel.Text = $"Temps écoulé : {_elapsed.ToString(format)}";
     }
@@ -107,6 +109,7 @@ public partial class SeanceEnCours : ContentPage
 
         if (workout?.Exercises != null)
         {
+            // Dispatch chaque exercice dans la bonne liste selon s'il est planifié ou ajouté en séance
             foreach (var ex in workout.Exercises)
             {
                 System.Diagnostics.Debug.WriteLine($"[SeanceEnCours] Exercice: {ex.Name}, IsPlanned: {ex.IsPlanned}, ActualSets: {ex.ActualSets?.Count ?? 0}");
@@ -129,6 +132,7 @@ public partial class SeanceEnCours : ContentPage
     {
         string summary;
 
+        // Priorité d'affichage : séries planifiées > séries réalisées > message vide
         if (ex.PlannedSets is { Count: > 0 })
         {
             summary = string.Join("  •  ",
@@ -162,6 +166,7 @@ public partial class SeanceEnCours : ContentPage
         if (string.IsNullOrWhiteSpace(name))
             return;
 
+        // OrdinalIgnoreCase : la comparaison ignore la casse (ex: "Squat" == "squat")
         bool alreadyExists =
             AddedExercises.Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
@@ -174,6 +179,7 @@ public partial class SeanceEnCours : ContentPage
         var root = await _workoutService.LoadWorkoutsAsync();
         var workout = root.Workouts.FirstOrDefault(w => w.Date.Date == _sessionDate);
 
+        // Crée un nouveau workout pour aujourd'hui si aucun n'existe encore
         if (workout == null)
         {
             workout = new Workout
@@ -232,6 +238,7 @@ public partial class SeanceEnCours : ContentPage
 
         var root = await _workoutService.LoadWorkoutsAsync();
         var workout = root.Workouts.FirstOrDefault(w => w.Date.Date == _sessionDate);
+        // !ex.IsPlanned : on ne modifie que les exercices ajoutés en séance, pas les planifiés
         var exercise = workout?.Exercises.FirstOrDefault(ex => ex.Name == name && !ex.IsPlanned);
         if (exercise == null) return;
 
@@ -275,6 +282,7 @@ public partial class SeanceEnCours : ContentPage
         if (workout != null)
         {
             workout.Status = "completed";
+            // += et non = pour cumuler avec la durée déjà enregistrée si la séance a été interrompue
             workout.DurationSeconds += (int)_elapsed.TotalSeconds;
             await _workoutService.SaveWorkoutsAsync(root);
         }

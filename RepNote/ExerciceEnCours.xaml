@@ -8,6 +8,7 @@ Date: 06.05.2026-->
              Title="ExerciceEnCours">
     <Grid RowDefinitions="Auto, *, Auto" Padding="25, 10, 25, 20">
 
+        <!-- En-tête : logo, titre de la page et chronomètre -->
         <VerticalStackLayout Grid.Row="0" Spacing="5" Margin="0,0,0,15">
             <Label Text="RepNote" 
                    TextColor="White" 
@@ -29,9 +30,11 @@ Date: 06.05.2026-->
                    HorizontalOptions="Center" />
         </VerticalStackLayout>
 
+        <!-- Zone scrollable : modification exercice + ajout série + liste -->
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Spacing="15">
 
+                <!-- Bloc pour modifier le nom de l'exercice en cours -->
                 <Label Text="Modifier l'exercice" TextColor="#8E8E8E" FontSize="15" />
                 <Frame BackgroundColor="#2D2D2D" CornerRadius="20" HasShadow="False" Padding="20, 15">
                     <VerticalStackLayout Spacing="5">
@@ -41,6 +44,7 @@ Date: 06.05.2026-->
                     </VerticalStackLayout>
                 </Frame>
 
+                <!-- Formulaire d'ajout d'une série (reps + poids) -->
                 <Label Text="Ajouter une série" TextColor="#8E8E8E" FontSize="15" />
                 <Frame BackgroundColor="#2D2D2D" CornerRadius="20" HasShadow="False" Padding="20, 15">
                     <VerticalStackLayout Spacing="10">
@@ -54,10 +58,12 @@ Date: 06.05.2026-->
                     </VerticalStackLayout>
                 </Frame>
 
+                <!-- Liste des séries ajoutées pendant la séance -->
                 <Label Text="Série ajoutées" TextColor="#8E8E8E" FontSize="15" Margin="0,10,0,0" />
                 <CollectionView x:Name="SeriesList">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
+                            <!-- Carte série : numéro + reps/poids + boutons modifier/supprimer -->
                             <Frame BackgroundColor="#2D2D2D" CornerRadius="15" Margin="0,0,0,10" Padding="15" HasShadow="False">
                                 <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*, Auto, Auto">
                                     <Label Grid.Row="0" Grid.Column="0" Text="Série 1" TextColor="White" FontAttributes="Bold" FontSize="16" />

@@ -49,6 +49,7 @@ public partial class PlanifSerie : ContentPage
         if (existing != null)
         {
             MyWorkouts.Clear();
+            // Where(e => e.IsPlanned) : charge uniquement les exercices planifiés, pas ceux ajoutés en séance
             foreach (var exercise in existing.Exercises.Where(e => e.IsPlanned))
             {
                 MyWorkouts.Add(exercise.Name);
@@ -78,10 +79,12 @@ public partial class PlanifSerie : ContentPage
 
         if (existing != null)
         {
+            // Garde les exercices ajoutés en séance pour ne pas les écraser lors de la sauvegarde
             var sessionExercises = existing.Exercises.Where(e => !e.IsPlanned).ToList();
 
             if (MyWorkouts.Count == 0)
             {
+                // Si plus aucun exercice planifié ET aucun exercice de séance : supprime le workout entier
                 if (sessionExercises.Count == 0)
                     data.Workouts.Remove(existing);
                 else
@@ -92,6 +95,7 @@ public partial class PlanifSerie : ContentPage
                 var updatedExercises = new List<Exercise>();
                 foreach (var name in MyWorkouts)
                 {
+                    // Réutilise l'exercice existant s'il existe pour ne pas perdre les séries déjà planifiées
                     var oldExercise = existing.Exercises.FirstOrDefault(e => e.Name == name && e.IsPlanned);
                     updatedExercises.Add(oldExercise ?? new Exercise
                     {
@@ -101,10 +105,12 @@ public partial class PlanifSerie : ContentPage
                         ActualSets = new List<WorkoutSet>()
                     });
                 }
+                // Rajoute les exercices de séance à la fin de la liste mise à jour
                 updatedExercises.AddRange(sessionExercises);
                 existing.Exercises = updatedExercises;
             }
         }
+        // Aucun workout existant pour cette date : on en crée un nouveau avec tous les exercices planifiés
         else if (MyWorkouts.Count > 0)
         {
             var newWorkout = new Workout
@@ -183,6 +189,7 @@ public partial class PlanifSerie : ContentPage
     {
         try
         {
+            // Ajoute le texte de la saisie s'il n'a pas encore été validé avec le bouton "Ajouter"
             if (!string.IsNullOrWhiteSpace(SeriesEntry.Text))
             {
                 MyWorkouts.Add(SeriesEntry.Text.Trim());

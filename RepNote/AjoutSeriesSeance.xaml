@@ -17,10 +17,11 @@
 
     <Grid RowDefinitions="*, Auto">
 
+        <!-- Zone scrollable : titre + formulaire + liste des séries -->
         <ScrollView Grid.Row="0" Padding="0,0,0,16">
             <VerticalStackLayout Spacing="0" Padding="20,20,20,0">
 
-                <!-- Nom de l'exercice -->
+                <!-- Nom de l'exercice affiché en haut -->
                 <Label x:Name="ExerciseNameLabel"
                        Text=""
                        FontSize="26"
@@ -43,6 +44,7 @@
                     </Border.StrokeShape>
                     <VerticalStackLayout Padding="16,14" Spacing="12">
 
+                        <!-- Champs reps et poids côte à côte -->
                         <Grid ColumnDefinitions="*, *" ColumnSpacing="16">
                             <VerticalStackLayout Grid.Column="0" Spacing="2">
                                 <Label Text="Répétitions"
@@ -106,6 +108,7 @@
                 <CollectionView x:Name="SeriesList">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
+                            <!-- Carte de chaque série : infos à gauche, boutons modifier/supprimer à droite -->
                             <Border BackgroundColor="#2A2A2A"
                                     StrokeThickness="0"
                                     Margin="0,0,0,10">

@@ -7,6 +7,7 @@
 
     <Grid RowDefinitions="Auto, *, Auto" Padding="25, 10, 25, 20">
 
+        <!-- En-tête : logo RepNote + titre de la page -->
         <VerticalStackLayout Grid.Row="0" Spacing="5" Margin="0,0,0,25">
             <Label Text="RepNote" 
                    TextColor="White" 
@@ -21,8 +22,9 @@
                    Margin="0,20,0,0"/>
         </VerticalStackLayout>
 
+        <!-- Contenu principal : formulaire d'ajout + liste des exercices planifiés -->
         <VerticalStackLayout Grid.Row="1" Spacing="15">
-            <Label Text="Ajouter un exercice" 
+            <Label Text="Ajouter un exercice"
                    TextColor="#8E8E8E" 
                    FontSize="16" />
 
@@ -66,10 +68,12 @@
                    FontSize="16" 
                    Margin="0,15,0,0" />
 
+            <!-- Liste des exercices planifiés pour la séance -->
             <CollectionView x:Name="SeriesList" Margin="0,10,0,0">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Frame BackgroundColor="#1A1A1A" 
+                        <!-- Carte exercice : nom + boutons modifier/supprimer -->
+                        <Frame BackgroundColor="#1A1A1A"
                                CornerRadius="15" 
                                Margin="0,0,0,10" 
                                Padding="15,10"

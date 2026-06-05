@@ -65,6 +65,7 @@ public partial class AjoutSeriesSeance : ContentPage
 
         var root = await _workoutService.LoadWorkoutsAsync();
         var workout = root.Workouts.FirstOrDefault(w => w.Date.Date == _sessionDate);
+        // !e.IsPlanned : on ne charge que les exercices ajoutés en séance, pas les planifiés
         var exercise = workout?.Exercises.FirstOrDefault(e => e.Name == _exerciseName && !e.IsPlanned);
 
         Series.Clear();
@@ -98,6 +99,7 @@ public partial class AjoutSeriesSeance : ContentPage
             return;
         }
 
+        // !e.IsPlanned : cible uniquement les exercices ajoutés en séance (pas les planifiés)
         var exercise = workout.Exercises.FirstOrDefault(e => e.Name == _exerciseName && !e.IsPlanned);
         if (exercise == null)
         {
@@ -135,6 +137,7 @@ public partial class AjoutSeriesSeance : ContentPage
             await DisplayAlert("Erreur", "Entre un nombre de répétitions valide.", "OK");
             return;
         }
+        // Accepte la virgule comme séparateur décimal (ex: "2,5" → 2.5)
         if (!double.TryParse(PoidsEntry.Text, NumberStyles.Any,
                 CultureInfo.InvariantCulture, out double poids) || poids < 0)
         {
@@ -228,6 +231,7 @@ public partial class AjoutSeriesSeance : ContentPage
         public string Numero
         {
             get => _numero;
+            // OnPropertyChanged(nameof(Details)) force le rafraîchissement du label "Xreps × Ykg"
             set { _numero = value; OnPropertyChanged(); OnPropertyChanged(nameof(Details)); }
         }
         public int Reps

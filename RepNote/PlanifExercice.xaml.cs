@@ -74,6 +74,7 @@ public partial class PlanifExercice : ContentPage
             var exercise = workout.Exercises.FirstOrDefault(e => e.Name == _exerciseName);
             if (exercise != null)
             {
+                // BeginInvokeOnMainThread : les modifications UI doivent s'exécuter sur le thread principal
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     ExerciseNameLabel.Text = exercise.Name;
@@ -111,6 +112,7 @@ public partial class PlanifExercice : ContentPage
         var root = await _workoutService.LoadWorkoutsAsync();
 
         var workout = root.Workouts.FirstOrDefault(w => w.Date.Date == _selectedDate.Date);
+        // Crée un workout vide pour la date sélectionnée s'il n'existe pas encore
         if (workout == null)
         {
             workout = new Workout
@@ -136,6 +138,7 @@ public partial class PlanifExercice : ContentPage
             workout.Exercises.Add(exercise);
         }
 
+        // Convertit la liste d'affichage (SerieData) en modèle de données (WorkoutSet)
         exercise.PlannedSets = AddedSeries.Select(s => new WorkoutSet
         {
             Reps = int.TryParse(s.Reps, out int r) ? r : 0,
@@ -183,6 +186,7 @@ public partial class PlanifExercice : ContentPage
 
         string oldName = _exerciseName;
         string newName = ExerciseEditEntry.Text;
+        // Renomme l'exercice dans le JSON seulement si le nom a vraiment changé
         if (!string.IsNullOrEmpty(newName) && oldName != newName)
         {
             _exerciseName = newName;
@@ -200,6 +204,7 @@ public partial class PlanifExercice : ContentPage
         }
         else
         {
+            // Nom inchangé ou vide : sauvegarde simplement l'état sans renommer
             await SaveCurrentState();
         }
     }
